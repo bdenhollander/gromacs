@@ -96,9 +96,6 @@
 #include "gromacs/swap/swapcoords.h"
 #include "gromacs/imd/imd.h"
 
-#ifdef GMX_FAHCORE
-#include "corewrap.h"
-#endif
 
 static void reset_all_counters(FILE *fplog, t_commrec *cr,
                                gmx_int64_t step,
@@ -1359,6 +1356,10 @@ double do_md(FILE *fplog, t_commrec *cr, int nfile, const t_filenm fnm[],
             if (gmx_get_stop_condition() == gmx_stop_cond_next)
             {
                 gs.sig[eglsSTOPCOND] = -1;
+            }
+            if (gmx_get_stop_condition() == gmx_stop_cond_abort)
+            {
+                bLastStep = TRUE;
             }
             /* < 0 means stop at next step, > 0 means stop at next NS step */
             if (fplog)

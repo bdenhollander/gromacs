@@ -115,12 +115,6 @@ void push_ps(FILE *fp)
     tMPI_Thread_mutex_unlock(&pstack_mutex);
 }
 
-#ifdef GMX_FAHCORE
-/* don't use pipes!*/
-#define popen fah_fopen
-#define pclose fah_fclose
-#define SKIP_FFOPS 1
-#else
 #ifdef gmx_ffclose
 #undef gmx_ffclose
 #endif
@@ -139,7 +133,6 @@ static int pclose(FILE *fp)
     return 0;
 }
 #endif /* !defined(HAVE_PIPES) && !defined(__native_client__) */
-#endif /* GMX_FAHCORE */
 
 int gmx_ffclose(FILE *fp)
 {
@@ -989,10 +982,6 @@ int gmx_fsync(FILE *fp)
 {
     int rc = 0;
 
-#ifdef GMX_FAHCORE
-    /* the fahcore defines its own os-independent fsync */
-    rc = fah_fsync(fp);
-#else /* GMX_FAHCORE */
     {
         int fn = -1;
 
@@ -1013,7 +1002,6 @@ int gmx_fsync(FILE *fp)
 #endif
         }
     }
-#endif /* GMX_FAHCORE */
 
     /* We check for these error codes this way because POSIX requires them
        to be defined, and using anything other than macros is unlikely: */

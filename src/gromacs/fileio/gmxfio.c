@@ -500,10 +500,7 @@ t_fileio *gmx_fio_open(const char *fn, const char *mode)
              */
             if (newmode[0] == 'w')
             {
-#ifndef GMX_FAHCORE
-                /* only make backups for normal gromacs */
                 make_backup(fn);
-#endif
             }
             else
             {

@@ -88,10 +88,7 @@ void gmx_tng_open(const char       *filename,
      */
     if (mode == 'w')
     {
-#ifndef GMX_FAHCORE
-        /* only make backups for normal gromacs */
         make_backup(filename);
-#endif
     }
 
     /* tng must not be pointing at already allocated memory.

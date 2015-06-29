@@ -17,6 +17,8 @@
 
 #include "tng/tng_io.h"
 
+#include <fah/checksum/redefines.h>
+
 #ifdef USE_STD_INTTYPES_H
 #include <inttypes.h>
 #endif

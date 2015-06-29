@@ -81,11 +81,7 @@ void init(int *argc, char ***argv)
     }
     else
     {
-#ifdef GMX_FAHCORE
-        (void) fah_MPI_Init(argc, argv);
-#else
         (void) MPI_Init(argc, argv);
-#endif
     }
     // Bump the counter to record this initialization event
     g_initializationCounter++;

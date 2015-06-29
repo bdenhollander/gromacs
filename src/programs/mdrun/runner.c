@@ -90,10 +90,6 @@
 #include "gromacs/pulling/pull.h"
 #include "gromacs/pulling/pull_rotation.h"
 
-#ifdef GMX_FAHCORE
-#include "corewrap.h"
-#endif
-
 #include "gpu_utils.h"
 #include "nbnxn_cuda_data_mgmt.h"
 
