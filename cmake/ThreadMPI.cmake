@@ -78,7 +78,7 @@ elseif (CMAKE_USE_PTHREADS_INIT)
     set(THREAD_PTHREADS 1)
     set(THREAD_LIB ${CMAKE_THREAD_LIBS_INIT})
 else()
-    message(FATAL_ERROR "Thread support required")
+    message(WARNING "Thread support required")
 endif ()
 
 # Turns on thread_mpi core threading functions.
