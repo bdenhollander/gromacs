@@ -64,7 +64,7 @@
 #include "../fileio/filenm.h"
 
 #ifdef GMX_NATIVE_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #define NOFLAGS 0
 #endif
 
