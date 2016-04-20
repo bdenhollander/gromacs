@@ -887,7 +887,7 @@ int gmx_truncatefile(char *path, gmx_off_t length)
 
 int gmx_file_rename(const char *oldname, const char *newname)
 {
-#ifndef GMX_NATIVE_WINDOWS
+#if !defined(GMX_NATIVE_WINDOWS) || defined(GMX_FAHCORE)
     /* under unix, rename() is atomic (at least, it should be). */
     return rename(oldname, newname);
 #else
