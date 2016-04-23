@@ -61,6 +61,10 @@
 #include <io.h>
 #endif
 
+#ifdef GMX_FAHCORE
+#include <fah/checksum/ChecksumManager.h>
+#endif
+
 /* Windows file stuff, only necessary for visual studio */
 #ifdef _MSC_VER
 #include <windows.h>
@@ -887,13 +891,16 @@ int gmx_truncatefile(char *path, gmx_off_t length)
 
 int gmx_file_rename(const char *oldname, const char *newname)
 {
-#if !defined(GMX_NATIVE_WINDOWS) || defined(GMX_FAHCORE)
+#ifndef GMX_NATIVE_WINDOWS
     /* under unix, rename() is atomic (at least, it should be). */
     return rename(oldname, newname);
 #else
     if (MoveFileEx(oldname, newname,
                    MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH))
     {
+#ifdef GMX_FAHCORE
+        FAH::ChecksumManager::instance().rename(oldname, newname);
+#endif
         return 0;
     }
     else
