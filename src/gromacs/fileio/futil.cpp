@@ -61,10 +61,6 @@
 #include <io.h>
 #endif
 
-#ifdef GMX_FAHCORE
-#include <fah/checksum/ChecksumManager.h>
-#endif
-
 /* Windows file stuff, only necessary for visual studio */
 #ifdef _MSC_VER
 #include <windows.h>
@@ -899,7 +895,8 @@ int gmx_file_rename(const char *oldname, const char *newname)
                    MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH))
     {
 #ifdef GMX_FAHCORE
-        FAH::ChecksumManager::instance().rename(oldname, newname);
+        /* This just lets the F@H checksumming system know about the rename */
+        fcRename(oldname, newname);
 #endif
         return 0;
     }
