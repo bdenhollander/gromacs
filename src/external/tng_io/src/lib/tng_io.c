@@ -17,6 +17,10 @@
 
 #include "tng/tng_io.h"
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef USE_STD_INTTYPES_H
 #include <inttypes.h>
 #endif
