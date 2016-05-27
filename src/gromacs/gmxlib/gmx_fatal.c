@@ -66,6 +66,7 @@ static FILE               *log_file       = NULL;
 static tMPI_Thread_mutex_t debug_mutex     = TMPI_THREAD_MUTEX_INITIALIZER;
 static tMPI_Thread_mutex_t where_mutex     = TMPI_THREAD_MUTEX_INITIALIZER;
 
+
 gmx_bool bDebugMode(void)
 {
     gmx_bool ret;
@@ -232,6 +233,10 @@ static void quit_gmx_noquit(const char *msg)
     tMPI_Thread_mutex_unlock(&debug_mutex);
 }
 
+
+static void        (*gmx_error_handler)(const char *msg) = quit_gmx;
+
+
 void gmx_fatal(int f_errno, const char *file, int line, const char *fmt, ...)
 {
     va_list ap;
@@ -289,7 +294,8 @@ void gmx_fatal_collective(int f_errno, const char *file, int line,
         if (bFinalize)
         {
             /* Use an error handler that does not quit */
-            set_gmx_error_handler(quit_gmx_noquit);
+            if (gmx_error_handler == quit_gmx)
+                set_gmx_error_handler(quit_gmx_noquit);
         }
 
         _gmx_error("fatal", msg, file, line);
@@ -348,8 +354,6 @@ void init_debug(const int dbglevel, const char *dbgfile)
 }
 
 static const char *gmxuser = "Please report this to the mailing list (gmx-users@gromacs.org)";
-
-static void        (*gmx_error_handler)(const char *msg) = quit_gmx;
 
 void set_gmx_error_handler(void (*func)(const char *msg))
 {
