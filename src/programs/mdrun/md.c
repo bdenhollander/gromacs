@@ -652,16 +652,6 @@ double do_md(FILE *fplog, t_commrec *cr, int nfile, const t_filenm fnm[],
     wallcycle_start(wcycle, ewcRUN);
     print_start(fplog, cr, walltime_accounting, "mdrun");
 
-    /* safest point to do file checkpointing is here.  More general point would be immediately before integrator call */
-#ifdef GMX_FAHCORE
-    chkpt_ret = fcCheckPointParallel( cr->nodeid,
-                                      NULL, 0);
-    if (chkpt_ret == 0)
-    {
-        gmx_fatal( 3, __FILE__, __LINE__, "Checkpoint error on step %d\n", 0 );
-    }
-#endif
-
     debug_gmx();
     /***********************************************************
      *
@@ -1882,6 +1872,13 @@ double do_md(FILE *fplog, t_commrec *cr, int nfile, const t_filenm fnm[],
             /* increase the MD step number */
             step++;
             step_rel++;
+
+#ifdef GMX_FAHCORE
+            if (MASTER(cr))
+            {
+                fcReportProgress(ir->nsteps, step);
+            }
+#endif
         }
 
         cycles = wallcycle_stop(wcycle, ewcSTEP);

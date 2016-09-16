@@ -106,20 +106,6 @@ do_md_trajectory_writing(FILE           *fplog,
         mdof_flags |= (MDOF_X | MDOF_V);
     }
 #endif
-#ifdef GMX_FAHCORE
-    if (MASTER(cr))
-    {
-        fcReportProgress( ir->nsteps, step );
-    }
-
-    fcCheckin(MASTER(cr));
-
-    /* sync bCPT and fc record-keeping */
-    if (bCPT && MASTER(cr))
-    {
-        fcRequestCheckPoint();
-    }
-#endif
 
     if (mdof_flags != 0)
     {

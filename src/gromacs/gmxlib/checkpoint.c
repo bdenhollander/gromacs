@@ -1710,16 +1710,6 @@ void write_checkpoint(const char *fn, gmx_bool bNumberAndKeep,
 
     sfree(outputfiles);
     sfree(fntemp);
-
-#ifdef GMX_FAHCORE
-    /*code for alternate checkpointing scheme.  moved from top of loop over
-       steps */
-    fcRequestCheckPoint();
-    if (fcCheckPointParallel( cr->nodeid, NULL, 0) == 0)
-    {
-        gmx_fatal( 3, __FILE__, __LINE__, "Checkpoint error on step %d\n", step );
-    }
-#endif /* end GMX_FAHCORE block */
 }
 
 static void print_flag_mismatch(FILE *fplog, int sflags, int fflags)

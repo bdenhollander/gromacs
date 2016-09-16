@@ -307,6 +307,22 @@ void mdoutf_write_to_trajectory_files(FILE *fplog, t_commrec *cr,
             write_checkpoint(of->fn_cpt, of->bKeepAndNumCPT,
                              fplog, cr, of->eIntegrator, of->simulation_part,
                              of->bExpanded, of->elamstats, step, t, state_global);
+#ifdef GMX_FAHCORE
+            /* Always FAH checkpoint immediately after a Gromacs checkpoint.
+             *
+             * Note that it is critical that we save a FAH checkpoint directly
+             * after writing a Gromacs checkpoint.  If the program dies, either
+             * by the machine powering off suddenly or the process being,
+             * killed, FAH can recover files that have only appended data by
+             * truncating them to the last recorded length.  The Gromacs
+             * checkpoint does not just append data, it is fully rewritten each
+             * time so a crash between moving the new Gromacs checkpoint file in
+             * to place and writing a FAH checkpoint is not recoverable.  Thus
+             * the time between these operations must be kept as short a
+             * possible.
+             */
+            fcCheckpoint();
+#endif
         }
 
         if (mdof_flags & (MDOF_X | MDOF_V | MDOF_F))
@@ -377,6 +393,15 @@ void mdoutf_write_to_trajectory_files(FILE *fplog, t_commrec *cr,
                 sfree(xxtc);
             }
         }
+
+#ifdef GMX_FAHCORE
+        /* Write a FAH checkpoint after writing any other data.  We may end up
+           checkpointing twice but it's fast so it's ok.  See notes above. */
+        if ((mdof_flags & ~MDOF_CPT))
+        {
+            fcCheckpoint();
+        }
+#endif
     }
 }
 
