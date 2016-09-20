@@ -156,4 +156,8 @@ do_md_trajectory_writing(FILE           *fplog,
         }
         wallcycle_stop(mdoutf_get_wcycle(outf), ewcTRAJ);
     }
+
+#ifdef GMX_FAHCORE
+    fcWriteVisFrame(ir->ePBC, state_global->box, top_global, state_global->x);
+#endif
 }

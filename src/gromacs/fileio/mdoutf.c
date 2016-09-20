@@ -69,9 +69,6 @@ struct gmx_mdoutf {
     int               natoms_x_compressed;
     gmx_groups_t     *groups; /* for compressed position writing */
     gmx_wallcycle_t   wcycle;
-#ifdef GMX_FAHCORE
-    int               ePBC;
-#endif
 };
 
 
@@ -101,9 +98,6 @@ gmx_mdoutf_t init_mdoutf(FILE *fplog, int nfile, const t_filenm fnm[],
     of->simulation_part         = ir->simulation_part;
     of->x_compression_precision = ir->x_compression_precision;
     of->wcycle                  = wcycle;
-#ifdef GMX_FAHCORE
-    of->ePBC                    = ir->ePBC;
-#endif
 
     if (MASTER(cr))
     {
@@ -401,9 +395,6 @@ void mdoutf_write_to_trajectory_files(FILE *fplog, t_commrec *cr,
         }
 
 #ifdef GMX_FAHCORE
-        fcWriteVisFrame(of->ePBC, state_global->box, top_global,
-                        state_global->x);
-
         /* Write a FAH checkpoint after writing any other data.  We may end up
            checkpointing twice but it's fast so it's ok.  See notes above. */
         if ((mdof_flags & ~MDOF_CPT))
