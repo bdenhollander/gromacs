@@ -874,10 +874,6 @@ static void check_and_update_hw_opt_1(gmx_hw_opt_t *hw_opt,
 #endif
 
 #ifndef GMX_OPENMP
-    if (hw_opt->nthreads_omp > 1)
-    {
-        gmx_fatal(FARGS, "More than 1 OpenMP thread requested, but Gromacs was compiled without OpenMP support");
-    }
     hw_opt->nthreads_omp = 1;
 #endif
 
