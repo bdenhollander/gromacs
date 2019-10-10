@@ -160,8 +160,7 @@ static int
 gmx_wintruncate(const char *filename, __int64 size)
 {
 #ifdef GMX_FAHCORE
-    /*we do this elsewhere*/
-    return 0;
+    return truncate(filename, size);
 #else
     FILE *fp;
     int   rc;
