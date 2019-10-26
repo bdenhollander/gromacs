@@ -159,9 +159,6 @@ const char *edfh_names[edfhNR] =
 static int
 gmx_wintruncate(const char *filename, __int64 size)
 {
-#ifdef GMX_FAHCORE
-    return truncate(filename, size);
-#else
     FILE *fp;
     int   rc;
 
@@ -176,7 +173,6 @@ gmx_wintruncate(const char *filename, __int64 size)
     return _chsize_s( fileno(fp), size);
 #else
     return _chsize( fileno(fp), size);
-#endif
 #endif
 }
 #endif
@@ -2238,7 +2234,7 @@ static void read_checkpoint(const char *fn, FILE **pfplog,
 
             if (i != 0) /*log file is already seeked to correct position */
             {
-#ifdef GMX_NATIVE_WINDOWS
+#if defined(GMX_NATIVE_WINDOWS) && !defined(GMX_FAHCORE)
                 rc = gmx_wintruncate(outputfiles[i].filename, outputfiles[i].offset);
 #else
                 rc = truncate(outputfiles[i].filename, outputfiles[i].offset);
