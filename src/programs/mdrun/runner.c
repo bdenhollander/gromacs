@@ -1457,16 +1457,85 @@ int mdrunner(gmx_hw_opt_t *hw_opt,
         ed = ed_open(mtop->natoms, &state->edsamstate, nfile, fnm, Flags, oenv, cr);
     }
 
+    int maxThreads = 128;
+    int threads[maxThreads+1];
+    threads[1] = 1;
+    char delim = '\0';
+
     if (PAR(cr) && !(EI_TPI(inputrec->eI) ||
                      inputrec->eI == eiNM))
     {
-        cr->dd = init_domain_decomposition(fplog, cr, Flags, ddxyz, rdd, rconstr,
+        for(int i = 2; i <= maxThreads; i++) {
+            cr->nnodes = i;
+            cr->npmenodes = -1;
+            
+            cr->dd = init_domain_decomposition(fplog, cr, Flags, ddxyz, rdd, rconstr,
                                            dddlb_opt, dlb_scale,
                                            ddcsx, ddcsy, ddcsz,
                                            mtop, inputrec,
                                            box, state->x,
                                            &ddbox, &npme_major, &npme_minor);
 
+            if(cr->dd != NULL) {
+                md_print_info(cr, fplog, "\n%3d = %dx%dx%d", cr->nnodes, cr->dd->nc[0], cr->dd->nc[1], cr->dd->nc[2]);
+                if(cr->npmenodes > 0) {
+                    md_print_info(cr, fplog, " %3d + %2d PME", i - cr->npmenodes, cr->npmenodes);
+                }
+                threads[i] = 1;
+            } else {
+                threads[i] = 0;
+            }
+        }
+        
+        delim = '\0';
+        md_print_info(cr, fplog, "\n\nInclude CPU counts:\n");
+        for(int i = 1; i <= maxThreads; i++) {
+            if(threads[i] == 1) {
+                md_print_info(cr, fplog, "%c%d", delim, i);
+                delim = ',';
+            }
+        }
+        
+        delim = '\0';
+        md_print_info(cr, fplog, "\n\n[");
+        for(int i = 1; i <= maxThreads; i++) {
+            if(threads[i] == 1) {
+                md_print_info(cr, fplog, "%cCPUs==%d", delim, i);
+                delim = ' ';
+            }
+        }
+        md_print_info(cr, fplog, "]");
+        
+        delim = '\0';
+        md_print_info(cr, fplog, "\n\nExclude CPU counts:\n");
+        for(int i = 2; i <= maxThreads; i++) {
+            if(threads[i] != 1) {
+                md_print_info(cr, fplog, "%c%d", delim, i);
+                delim = ',';
+            }
+        }
+        
+        delim = '\0';
+        md_print_info(cr, fplog, "\n\n[");
+        for(int i = 2; i <= maxThreads; i++) {
+            if(threads[i] != 1) {
+                md_print_info(cr, fplog, "%cCPUs!=%d", delim, i);
+                delim = ' ';
+            }
+        }
+        md_print_info(cr, fplog, "]\n");
+
+        sleep(1);
+
+        /*
+        md_print_info(cr, fplog, "\n\nAll thread counts:\n");
+        for(int i = 1; i <= maxThreads; i++) {
+            md_print_info(cr, fplog, "\n%d", threads[i]);
+        }
+        md_print_info(cr, fplog, "\n");
+        */
+
+        exit(0);
         make_dd_communicators(fplog, cr, dd_node_order);
 
         /* Set overallocation to avoid frequent reallocation of arrays */

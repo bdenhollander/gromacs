@@ -6890,6 +6890,10 @@ gmx_domdec_t *init_domain_decomposition(FILE *fplog, t_commrec *cr,
                                comm->eDLB != edlbNO, dlb_scale,
                                comm->cellsize_limit, comm->cutoff,
                                comm->bInterCGBondeds);
+        
+        if(limit == -1){
+            return NULL;
+        }
 
         if (dd->nc[XX] == 0)
         {
@@ -6899,11 +6903,12 @@ gmx_domdec_t *init_domain_decomposition(FILE *fplog, t_commrec *cr,
                     comm->eDLB != edlbNO ? " or -dds" : "",
                     bC ? " or your LINCS settings" : "");
 
-            gmx_fatal_collective(FARGS, cr, NULL,
-                                 "There is no domain decomposition for %d ranks that is compatible with the given box and a minimum cell size of %g nm\n"
-                                 "%s\n"
-                                 "Look in the log file for details on the domain decomposition",
-                                 cr->nnodes-cr->npmenodes, limit, buf);
+            //gmx_fatal_collective(FARGS, cr, NULL,
+            //                     "There is no domain decomposition for %d ranks that is compatible with the given box and a minimum cell size of %g nm\n"
+            //                     "%s\n"
+            //                     "Look in the log file for details on the domain decomposition",
+            //                     cr->nnodes-cr->npmenodes, limit, buf);
+            return NULL;
         }
         set_dd_dim(fplog, dd);
     }
