@@ -1459,6 +1459,7 @@ int mdrunner(gmx_hw_opt_t *hw_opt,
 
     int maxThreads = 128;
     int threads[maxThreads+1];
+    int npme = cr->npmenodes;
     threads[1] = 1;
     char delim = '\0';
 
@@ -1467,7 +1468,7 @@ int mdrunner(gmx_hw_opt_t *hw_opt,
     {
         for(int i = 2; i <= maxThreads; i++) {
             cr->nnodes = i;
-            cr->npmenodes = -1;
+            cr->npmenodes = npme;
             
             cr->dd = init_domain_decomposition(fplog, cr, Flags, ddxyz, rdd, rconstr,
                                            dddlb_opt, dlb_scale,
